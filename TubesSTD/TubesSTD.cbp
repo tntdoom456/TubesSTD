@@ -32,6 +32,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Tree.h" />
 		<Unit filename="main.cpp" />
 		<Extensions />
 	</Project>
