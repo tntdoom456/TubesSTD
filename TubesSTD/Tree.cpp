@@ -1,104 +1,87 @@
 #include "Tree.h"
-
+#include <iostream>
 using namespace std;
 
-SkillNode::SkillNode(string n, int c, SkillNode* p) {
-    name = n;
-    cost = c;
-    isUnlocked = false;
-    parent = p;
+SkillNode* createSkill(string name, int cost, int reqStr, int reqInt) {
+    SkillNode* s = new SkillNode;
+    s->name = name;
+    s->cost = cost;
+    s->reqStr = reqStr;
+    s->reqInt = reqInt;
+    s->unlocked = false;
+    s->left = s->right = s->parent = nullptr;
+    return s;
 }
 
-SkillTree::SkillTree() {
-    root = new SkillNode("Novice", 0);
-    root->isUnlocked = true;
-}
-
-SkillTree::~SkillTree() {
-    deleteTree(root);
-}
-
-void SkillTree::deleteTree(SkillNode* node) {
-    if (!node) return;
-    for (SkillNode* child : node->children) {
-        deleteTree(child);
+// -------------------- DEPTH CALCULATOR ----------------------
+int getDepth(SkillNode* node) {
+    int d = 0;
+    while (node->parent != nullptr) {
+        node = node->parent;
+        d++;
     }
-    delete node;
+    return d;
 }
 
-SkillNode* SkillTree::findNode(SkillNode* node, string name) {
-    if (node == nullptr) return nullptr;
-    if (node->name == name) return node;
+// -------------------- AUTO BUILDER --------------------------
+SkillNode* addChildAuto(SkillNode* parent, string name, string role) {
+    if (!parent) return nullptr;
 
-    for (SkillNode* child : node->children) {
-        SkillNode* result = findNode(child, name);
-        if (result != nullptr) return result;
+    int depth = getDepth(parent) + 1;
+
+    int reqStr = 0;
+    int reqInt = 0;
+    int cost = depth;
+
+    if (parent->name == "Warrior") {
+        if (role == "attack") {
+            reqStr = 5 + depth * 3;
+        } else if (role == "defense") {
+            reqStr = 4 + depth * 2;
+            reqInt = 2 + depth;
+        }
     }
-    return nullptr;
-}
-
-void SkillTree::printTree(SkillNode* node, int level) {
-    if (!node) return;
-
-    for (int i = 0; i < level; i++) cout << "  ";
-
-    cout << "- " << node->name;
-    if (node->isUnlocked) cout << " [UNLOCKED]";
-    else cout << " [LOCKED] (Cost: " << node->cost << ")";
-    cout << endl;
-
-    for (SkillNode* child : node->children) {
-        printTree(child, level + 1);
+    else if (parent->name == "Mage") {
+        if (role == "magic-attack") {
+            reqInt = 5 + depth * 3;
+        } else if (role == "magic-support") {
+            reqInt = 4 + depth * 2;
+            reqStr = 2;
+        }
     }
-}
 
-void SkillTree::addSkill(string parentName, string skillName, int cost) {
-    SkillNode* parentNode = findNode(root, parentName);
-    if (parentNode) {
-        SkillNode* newSkill = new SkillNode(skillName, cost, parentNode);
-        parentNode->children.push_back(newSkill);
+    SkillNode* child = createSkill(name, cost, reqStr, reqInt);
+
+    // posisi otomatis kiri = attack, kanan = defense/support
+    if (role == "attack" || role == "magic-attack") {
+        parent->left = child;
     } else {
-        cout << "[Error] Parent skill '" << parentName << "' tidak ditemukan!" << endl;
+        parent->right = child;
     }
+
+    child->parent = parent;
+    return child;
 }
 
-bool SkillTree::checkRequirement(SkillNode* node, int playerPoints) {
-
-    if (node->isUnlocked) {
-        cout << "[Info] Skill '" << node->name << "' sudah terbuka." << endl;
-        return false;
-    }
-
-    if (node->parent != nullptr && !node->parent->isUnlocked) {
-        cout << "[Gagal] Syarat belum terpenuhi! Buka skill '" << node->parent->name << "' dulu." << endl;
-        return false;
-    }
-
-    if (playerPoints < node->cost) {
-        cout << "[Gagal] Poin kurang untuk '" << node->name << "'. Butuh: " << node->cost << ", Punya: " << playerPoints << endl;
-        return false;
-    }
-
+// -------------------- LOGIC UNLOCK --------------------------
+bool canUnlock(SkillNode* p, int skillPoints, int STR, int INT) {
+    if (!p) return false;
+    if (p->unlocked) return false;
+    if (p->parent && !p->parent->unlocked) return false;
+    if (skillPoints < p->cost) return false;
+    if (STR < p->reqStr) return false;
+    if (INT < p->reqInt) return false;
     return true;
 }
 
-void SkillTree::unlockSkill(string skillName, int &playerPoints) {
-    SkillNode* targetNode = findNode(root, skillName);
-
-    if (!targetNode) {
-        cout << "[Error] Skill '" << skillName << "' tidak ditemukan." << endl;
-        return;
+void showUnlockable(SkillNode* root, int skillPoints, int STR, int INT) {
+    if (!root) return;
+    if (canUnlock(root, skillPoints, STR, INT)) {
+        cout << "- " << root->name
+            << " (Cost " << root->cost
+            << ", STR " << root->reqStr
+            << ", INT " << root->reqInt << ")\n";
     }
-
-    if (checkRequirement(targetNode, playerPoints)) {
-        targetNode->isUnlocked = true;
-        playerPoints -= targetNode->cost;
-        cout << "[Sukses] Skill '" << targetNode->name << "' terbuka! Sisa Poin: " << playerPoints << endl;
-    }
-}
-
-void SkillTree::displayTree() {
-    cout << "\n--- Status Skill Tree ---" << endl;
-    printTree(root, 0);
-    cout << "-------------------------" << endl;
+    showUnlockable(root->left, skillPoints, STR, INT);
+    showUnlockable(root->right, skillPoints, STR, INT);
 }

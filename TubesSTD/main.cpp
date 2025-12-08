@@ -1,31 +1,40 @@
 #include <iostream>
-#include "Tree.h" // Include header buatan sendiri
-
+#include "Tree.h"
 using namespace std;
 
 int main() {
-    SkillTree myGameSkills;
-    int playerPoints = 15; // Contoh poin pemain
+    int STR, INT, skillPoints;
 
-    myGameSkills.addSkill("Novice", "Bash", 5);
-    myGameSkills.addSkill("Bash", "Stun", 8);
+    cout << "Masukkan STR: ";  cin >> STR;
+    cout << "Masukkan INT: ";  cin >> INT;
+    cout << "Masukkan Skill Points: "; cin >> skillPoints;
 
-    myGameSkills.addSkill("Novice", "Heal", 5);
-    myGameSkills.addSkill("Heal", "Revive", 10);
+    SkillNode* novice = createSkill("Novice");
+    novice->unlocked = true;
 
-    myGameSkills.displayTree();
-    cout << "\nPlayer Points: " << playerPoints << endl;
+    // Warrior & Mage sebagai template awal
+    SkillNode* warrior = createSkill("Warrior");
+    SkillNode* mage = createSkill("Mage");
 
-    cout << "\n1. Coba ambil Skill Level 2 (Stun) langsung (Harus Gagal):" << endl;
-    myGameSkills.unlockSkill("Stun", playerPoints);
+    novice->left = warrior;
+    warrior->parent = novice;
 
-    cout << "\n2. Ambil Skill Level 1 (Bash) (Harus Sukses):" << endl;
-    myGameSkills.unlockSkill("Bash", playerPoints);
+    novice->right = mage;
+    mage->parent = novice;
 
-    cout << "\n3. Ambil Skill Level 2 (Stun) sekarang (Harus Sukses):" << endl;
-    myGameSkills.unlockSkill("Stun", playerPoints);
+    // AUTOMATIC BUILDER
+    SkillNode* atk1 = addChildAuto(warrior, "Attacker Lv1", "attack");
+    SkillNode* def1 = addChildAuto(warrior, "Defender Lv1", "defense");
 
-    myGameSkills.displayTree();
+    SkillNode* atk2 = addChildAuto(atk1, "Berserker", "attack");
+    SkillNode* def2 = addChildAuto(def1, "Shield Master", "defense");
 
-    return 0;
+    SkillNode* mAtk1 = addChildAuto(mage, "Pyromancer", "magic-attack");
+    SkillNode* mDef1 = addChildAuto(mage, "Cryomancer", "magic-support");
+
+    SkillNode* mAtk2 = addChildAuto(mAtk1, "Inferno", "magic-attack");
+    SkillNode* mDef2 = addChildAuto(mDef1, "Blizzard", "magic-support");
+
+    cout << "\n=== Skill yang bisa kamu unlock ===\n";
+    showUnlockable(novice, skillPoints, STR, INT);
 }

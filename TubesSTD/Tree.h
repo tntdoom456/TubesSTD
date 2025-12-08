@@ -1,44 +1,28 @@
-#ifndef TREE_H_INCLUDED
-#define TREE_H_INCLUDED
-#include <iostream>
 #ifndef SKILLTREE_H
 #define SKILLTREE_H
 
 #include <string>
-#include <vector>
-#include <iostream>
+using namespace std;
 
 struct SkillNode {
-    std::string name;
+    string name;
     int cost;
-    bool isUnlocked;
+    int reqStr;
+    int reqInt;
+    bool unlocked;
+
+    SkillNode* left;
+    SkillNode* right;
     SkillNode* parent;
-    std::vector<SkillNode*> children;
-
-    SkillNode(std::string n, int c, SkillNode* p = nullptr);
 };
 
-class SkillTree {
-private:
-    SkillNode* root;
+SkillNode* createSkill(string name, int cost = 0, int reqStr = 0, int reqInt = 0);
+int getDepth(SkillNode* node);
 
-    SkillNode* findNode(SkillNode* node, std::string name);
-    void printTree(SkillNode* node, int level);
+// otomatis menentukan posisi & stats
+SkillNode* addChildAuto(SkillNode* parent, string name, string role);
 
-    void deleteTree(SkillNode* node);
-
-public:
-    SkillTree();
-    ~SkillTree();
-
-    void addSkill(std::string parentName, std::string skillName, int cost);
-    bool checkRequirement(SkillNode* node, int playerPoints);
-    void unlockSkill(std::string skillName, int &playerPoints);
-    void displayTree();
-};
-
-#endif
-
-
+bool canUnlock(SkillNode* p, int skillPoints, int STR, int INT);
+void showUnlockable(SkillNode* root, int skillPoints, int STR, int INT);
 
 #endif

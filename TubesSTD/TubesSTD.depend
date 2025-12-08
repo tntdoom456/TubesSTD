@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1765197243 source:c:\users\donis\documents\github\tubesstd\tubesstd\tree.cpp
+	"Tree.h"
+	<iostream>
+
+1765197223 c:\users\donis\documents\github\tubesstd\tubesstd\tree.h
+	<string>
+
