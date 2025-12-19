@@ -85,3 +85,107 @@ void showUnlockable(SkillNode* root, int skillPoints, int STR, int INT) {
     showUnlockable(root->left, skillPoints, STR, INT);
     showUnlockable(root->right, skillPoints, STR, INT);
 }
+
+SkillNode* addChildAuto(SkillNode* parent, string name, string role, char primaryStat) {
+    if (!parent) return nullptr;
+
+    int depth = getDepth(parent) + 1;
+    int cost = depth;
+    int reqStr = 0, reqInt = 0;
+
+    // Logika umum: Stat utama naik tinggi, stat sekunder naik sedikit
+    if (primaryStat == 'S') { // Strength based
+        reqStr = 5 + depth * 3;
+        if (role == "defense") reqInt = 2 + depth;
+    } else if (primaryStat == 'I') { // Int based
+        reqInt = 5 + depth * 3;
+        if (role == "magic-support") reqStr = 2;
+    }
+
+    SkillNode* child = createSkill(name, cost, reqStr, reqInt);
+
+    // Assign posisi
+    if (!parent->left) parent->left = child;
+    else parent->right = child; // Isi kanan jika kiri penuh
+
+    child->parent = parent;
+    return child;
+}
+
+bool unlockSkill(SkillNode* node, int &skillPoints, int STR, int INT) {
+    if (canUnlock(node, skillPoints, STR, INT)) {
+        node->unlocked = true;
+        skillPoints -= node->cost; // Kurangi poin user
+        cout << "Sukses membuka skill: " << node->name << endl;
+        return true;
+    }
+    cout << "Gagal membuka skill (Syarat tidak terpenuhi)." << endl;
+    return false;
+}
+
+void deleteTree(SkillNode* root) {
+    if (!root) return;
+    deleteTree(root->left);
+    deleteTree(root->right);
+    delete root; // Hapus node saat ini setelah anak-anaknya dihapus
+}
+
+
+// 1. SEARCH (Pencarian Rekursif)
+// Berguna untuk menemukan pointer node hanya berdasarkan nama string dari input user
+SkillNode* findNode(SkillNode* root, string name) {
+    if (root == nullptr) return nullptr;
+    if (root->name == name) return root;
+
+    // Cari di kiri
+    SkillNode* foundNode = findNode(root->left, name);
+    if (foundNode) return foundNode;
+
+    // Cari di kanan
+    return findNode(root->right, name);
+}
+
+// 2. READ (Visualisasi Tree)
+void printTree(SkillNode* root, int level) {
+    if (!root) return;
+
+    // Print indentasi (spasi) sesuai level kedalaman
+    for (int i = 0; i < level; i++) cout << "    ";
+
+    cout << "|-- " << root->name;
+    if (root->unlocked) cout << " [UNLOCKED]";
+    else cout << " (Locked | Cost: " << root->cost << ")";
+    cout << endl;
+
+    printTree(root->left, level + 1);
+    printTree(root->right, level + 1);
+}
+
+// 3. UPDATE
+void updateSkill(SkillNode* target, string newName, int newCost, int newStr, int newInt) {
+    if (!target) return;
+    target->name = newName;
+    target->cost = newCost;
+    target->reqStr = newStr;
+    target->reqInt = newInt;
+    cout << "Skill berhasil diupdate!\n";
+}
+
+// 4. DELETE
+// Menghapus node target beserta semua anaknya (pruning)
+void deleteSubtree(SkillNode* target) {
+    if (!target) return;
+
+    // Putuskan hubungan dengan parent terlebih dahulu
+    if (target->parent) {
+        if (target->parent->left == target) {
+            target->parent->left = nullptr;
+        } else if (target->parent->right == target) {
+            target->parent->right = nullptr;
+        }
+    }
+
+    // Hapus memori secara rekursif menggunakan fungsi yang sudah kamu buat sebelumnya
+    deleteTree(target);
+    cout << "Branch berhasil dihapus.\n";
+}
