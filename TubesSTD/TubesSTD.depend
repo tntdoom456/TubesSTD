@@ -6,3 +6,15 @@
 1766817877 c:\users\donis\documents\github\tubesstd\tubesstd\tree.h
 	<string>
 
+1766820941 source:d:\github stuff\tubesstd\tubesstd\tree.cpp
+	"Tree.h"
+	<iostream>
+
+1766820914 d:\github stuff\tubesstd\tubesstd\tree.h
+	<string>
+
+1766821105 source:d:\github stuff\tubesstd\tubesstd\main.cpp
+	<iostream>
+	<string>
+	"Tree.h"
+
