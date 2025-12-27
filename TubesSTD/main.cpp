@@ -4,29 +4,25 @@
 
 using namespace std;
 
-// Fungsi bantuan untuk membersihkan layar (opsional)
 void clearScreen() {
-    // system("cls"); // windows
-    // system("clear"); // linux/mac
+
     cout << string(5, '\n');
 }
 
 int main() {
-    // 1. Inisialisasi Player Stats
+
     int STR, INT, skillPoints;
     cout << "=== SETUP KARAKTER ===\n";
     cout << "Masukkan STR Awal: "; cin >> STR;
     cout << "Masukkan INT Awal: "; cin >> INT;
     cout << "Masukkan Skill Points: "; cin >> skillPoints;
 
-    // 2. Setup Root Tree (Novice)
     SkillNode* root = createSkill("Novice");
-    root->unlocked = true; // Skill awal selalu terbuka
+    root->unlocked = true;
 
-    // Data sementara untuk input user
     int choice;
-    string pName, cName, role; // Parent Name, Child Name, Role
-    int cost, rStr, rInt;      // Req vars
+    string pName, cName, role;
+    int cost, rStr, rInt;
 
     while (true) {
         cout << "\n====================================\n";
@@ -34,13 +30,13 @@ int main() {
         cout << "====================================\n";
         cout << "Stats: STR=" << STR << " | INT=" << INT << " | SP=" << skillPoints << endl;
         cout << "------------------------------------\n";
-        cout << "1. Tampilkan Tree (READ)\n";
-        cout << "2. Tambah Skill Manual (CREATE)\n";
-        cout << "3. Tambah Skill Otomatis (CREATE - Auto)\n";
-        cout << "4. Edit Skill (UPDATE)\n";
-        cout << "5. Hapus Skill/Branch (DELETE)\n";
+        cout << "1. Tampilkan Tree\n";
+        cout << "2. Tambah Skill Manual\n";
+        cout << "3. Tambah Skill Otomatis\n";
+        cout << "4. Edit Skill\n";
+        cout << "5. Hapus Skill/Branch\n";
         cout << "6. Unlock Skill (ACTION)\n";
-        cout << "7. Lihat yang bisa di-Unlock (FILTER)\n";
+        cout << "7. Lihat yang bisa di-Unlock\n";
         cout << "0. Keluar\n";
         cout << "Pilihan: ";
         cin >> choice;
@@ -48,12 +44,12 @@ int main() {
         if (choice == 0) break;
 
         switch (choice) {
-        case 1: // READ
+        case 1:
             cout << "\n[ Struktur Skill Tree ]\n";
             printTree(root);
             break;
 
-        case 2: // CREATE (Manual)
+        case 2:
             cout << "Masukkan nama Parent node: ";
             cin.ignore(); getline(cin, pName);
             {
@@ -70,7 +66,6 @@ int main() {
                         SkillNode* child = createSkill(cName, cost, rStr, rInt);
                         child->parent = p;
 
-                        // Masukkan ke slot kosong
                         if (!p->left) p->left = child;
                         else p->right = child;
 
@@ -82,7 +77,7 @@ int main() {
             }
             break;
 
-        case 3: // CREATE (Auto Builder)
+        case 3:
             cout << "Masukkan nama Parent node: ";
             cin.ignore(); getline(cin, pName);
             {
@@ -95,10 +90,8 @@ int main() {
                         cout << "Role (attack/defense/magic-attack/magic-support): ";
                         cin >> role;
 
-                        // Menentukan stat utama (S/I) berdasarkan parent
-                        char primary = 'S'; // Default Strength
-                        // Logika sederhana: kalau parentnya Mage/keturunannya, pakai Int
-                        // (Di kode nyata, bisa cek parent name atau role recursive)
+                        char primary = 'S';
+
                         cout << "Primary Stat (S for Warrior / I for Mage): ";
                         cin >> primary;
 
@@ -111,14 +104,14 @@ int main() {
             }
             break;
 
-        case 4: // UPDATE
+        case 4:
             cout << "Nama Skill yang mau diedit: ";
             cin.ignore(); getline(cin, cName);
             {
                 SkillNode* target = findNode(root, cName);
-                if (target && target != root) { // Jangan edit Novice sembarangan
+                if (target && target != root) {
                     cout << "--- Edit Data ---\n";
-                    cout << "Nama Baru: "; getline(cin, pName); // pakai var pName utk temp
+                    cout << "Nama Baru: "; getline(cin, pName);
                     cout << "Cost Baru: "; cin >> cost;
                     cout << "Req STR Baru: "; cin >> rStr;
                     cout << "Req INT Baru: "; cin >> rInt;
@@ -129,7 +122,7 @@ int main() {
             }
             break;
 
-        case 5: // DELETE
+        case 5:
             cout << "Nama Skill yang mau dihapus (Hati-hati, anak juga terhapus): ";
             cin.ignore(); getline(cin, cName);
             if (cName == "Novice") {
@@ -144,7 +137,7 @@ int main() {
             }
             break;
 
-        case 6: // UNLOCK
+        case 6:
             cout << "Nama Skill yang mau di-Unlock: ";
             cin.ignore(); getline(cin, cName);
             {
@@ -157,7 +150,7 @@ int main() {
             }
             break;
 
-        case 7: // FILTER / CHECK
+        case 7:
             cout << "\n=== Skill yang TERSEDIA untuk dibuka ===\n";
             showUnlockable(root, skillPoints, STR, INT);
             break;
@@ -167,7 +160,6 @@ int main() {
         }
     }
 
-    // Bersihkan memori sebelum keluar
     deleteTree(root);
     return 0;
 }
