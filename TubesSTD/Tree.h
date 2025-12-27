@@ -34,4 +34,8 @@ void printTree(SkillNode* root, int level = 0);
 void updateSkill(SkillNode* target, string newName, int newCost, int newStr, int newInt);
 void deleteSubtree(SkillNode* target);
 
+void traversalPreOrder(SkillNode* root);
+void traversalInOrder(SkillNode* root);
+void traversalPostOrder(SkillNode* root);
+
 #endif

@@ -5,20 +5,50 @@
 using namespace std;
 
 void clearScreen() {
-
     cout << string(5, '\n');
 }
 
 int main() {
-
     int STR, INT, skillPoints;
+
     cout << "=== SETUP KARAKTER ===\n";
     cout << "Masukkan STR Awal: "; cin >> STR;
     cout << "Masukkan INT Awal: "; cin >> INT;
     cout << "Masukkan Skill Points: "; cin >> skillPoints;
 
+    // --- INISIALISASI TREE OTOMATIS ---
+    // 1. Root
     SkillNode* root = createSkill("Novice");
     root->unlocked = true;
+
+    // 2. Level 1: Warrior & Mage
+    SkillNode* warrior = createSkill("Warrior", 1, 5, 0);
+    warrior->parent = root;
+    root->left = warrior;
+
+    SkillNode* mage = createSkill("Mage", 1, 0, 5);
+    mage->parent = root;
+    root->right = mage;
+
+    // 3. Level 2: Anak-anak Warrior
+    SkillNode* fighter = createSkill("Fighter", 2, 10, 0); // Kiri Warrior
+    fighter->parent = warrior;
+    warrior->left = fighter;
+
+    SkillNode* shielder = createSkill("Shielder", 2, 8, 2); // Kanan Warrior
+    shielder->parent = warrior;
+    warrior->right = shielder;
+
+    // 4. Level 2: Anak-anak Mage
+    SkillNode* fireball = createSkill("Fireball", 2, 0, 10); // Kiri Mage
+    fireball->parent = mage;
+    mage->left = fireball;
+
+    SkillNode* iceWall = createSkill("IceWall", 2, 2, 8); // Kanan Mage
+    iceWall->parent = mage;
+    mage->right = iceWall;
+
+    // -----------------------------------------------------------
 
     int choice;
     string pName, cName, role;
@@ -30,7 +60,7 @@ int main() {
         cout << "====================================\n";
         cout << "Stats: STR=" << STR << " | INT=" << INT << " | SP=" << skillPoints << endl;
         cout << "------------------------------------\n";
-        cout << "1. Tampilkan Tree\n";
+        cout << "1. Tampilkan Tree & Traversal\n"; // Judul menu diupdate
         cout << "2. Tambah Skill Manual\n";
         cout << "3. Tambah Skill Otomatis\n";
         cout << "4. Edit Skill\n";
@@ -45,8 +75,16 @@ int main() {
 
         switch (choice) {
         case 1:
+            // --- MENAMPILKAN STRUKTUR TREE ---
             cout << "\n[ Struktur Skill Tree ]\n";
             printTree(root);
+
+            // --- MENAMPILKAN 3 TRAVERSAL ---
+            cout << "\n------------------------------------\n";
+            cout << "[ Traversal Data ]\n";
+            cout << "Pre-Order  : "; traversalPreOrder(root); cout << "END\n";
+            cout << "In-Order   : "; traversalInOrder(root); cout << "END\n";
+            cout << "Post-Order : "; traversalPostOrder(root); cout << "END\n";
             break;
 
         case 2:
@@ -91,7 +129,6 @@ int main() {
                         cin >> role;
 
                         char primary = 'S';
-
                         cout << "Primary Stat (S for Warrior / I for Mage): ";
                         cin >> primary;
 

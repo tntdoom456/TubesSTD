@@ -171,3 +171,25 @@ void deleteSubtree(SkillNode* target) {
     deleteTree(target);
     cout << "Branch berhasil dihapus.\n";
 }
+
+
+void traversalPreOrder(SkillNode* root) {
+    if (!root) return;
+    cout << root->name << " -> ";
+    traversalPreOrder(root->left);
+    traversalPreOrder(root->right);
+}
+
+void traversalInOrder(SkillNode* root) {
+    if (!root) return;
+    traversalInOrder(root->left);
+    cout << root->name << " -> ";
+    traversalInOrder(root->right);
+}
+
+void traversalPostOrder(SkillNode* root) {
+    if (!root) return;
+    traversalPostOrder(root->left);
+    traversalPostOrder(root->right);
+    cout << root->name << " -> ";
+}
