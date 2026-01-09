@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <limits> // Diperlukan untuk numeric_limits
+#include <limits>
 #include "Tree.h"
 
 using namespace std;
@@ -11,10 +11,8 @@ int getValidInt(string prompt) {
     while (true) {
         cout << prompt;
         if (cin >> value) {
-            // Input sukses
             return value;
         } else {
-            // Input gagal
             cout << "Input Error! Harap masukkan angka.\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -25,10 +23,8 @@ int getValidInt(string prompt) {
 void pause() {
     cout << "\nTekan Enter untuk kembali ke menu...";
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Bersihkan buffer
-    cin.get(); // Tunggu enter
+    cin.get();
 }
-
-// Fungsi bantuan untuk membersihkan buffer sebelum getline jika diperlukan
 void cleanBuffer() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
@@ -68,8 +64,6 @@ int main() {
     SkillNode* iceWall = createSkill("IceWall", 2, 2, 8);
     iceWall->parent = mage;
     mage->right = iceWall;
-
-    // -----------------------------------------------------------
 
     int choice;
     string pName, cName, role;
@@ -199,7 +193,6 @@ int main() {
             break;
 
         case 6:
-            // FITUR BARU: Tampilkan daftar dulu
             cout << "\n=== Daftar Skill yang BISA di-Unlock saat ini ===\n";
             showUnlockable(root, skillPoints, STR, INT);
             cout << "-------------------------------------------------\n";
@@ -221,7 +214,6 @@ int main() {
             cout << "\n=== Skill yang TERSEDIA untuk dibuka ===\n";
             showUnlockable(root, skillPoints, STR, INT);
 
-            // FITUR BARU: Opsi langsung unlock
             cout << "\nApakah Anda ingin membuka salah satu skill di atas? (y/n): ";
             cin >> confirm;
             if (confirm == 'y' || confirm == 'Y') {
